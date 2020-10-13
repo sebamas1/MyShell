@@ -13,6 +13,7 @@ Este trabajo práctico consta en la elaboración de un programa en lenguaje **C*
 
 ## Command line prompt
 _myshell_ debe contar con un prompt que contenga el camino al directorio actual. e.g.: 
+
 ```Bash
 username@groupname:~$
 ```
@@ -32,52 +33,63 @@ _myshell_ debe ser capaz de tomar sus comandos a ejecutar desde un archivo. Por 
 
 Cuando se alcance el fin de archivo (_EOF_), _myshell_ debe cerrarse.
 
-Notar que si _myshell_ se ejecuta sin argumento (./myshell), se tiene que mostrar el command prompt y se debe esperar a comandos del usuario vía stdin.
+Notar que si  _myshell_  se ejecuta sin argumento (./myshell), se tiene que mostrar el command prompt y se debe esperar a comandos del usuario vía stdin.
 
 ## I/O redirection 
 Se debe soportar redirección de entrada/salida en stdin y/o stdout. Por ejemplo:
+
 ```Bash
 program arg1 ar2 < inputfile > outputfile
 ```
-Ejecuta la el programa _program_ con los arguments _arg1_, _arg2_. stdin es reemplazado por inputfile y stdout por outputfile.
+Ejecuta la el programa  _program_  con los arguments  _arg1_ ,  _arg2_ . stdin es reemplazado por inputfile y stdout por outputfile.
 
 La redirección debe funcionar para el comando interno **echo**.
 
 ## Background execution
-Un ampersand **&** al final de la línea de comando indica que la _shell_ debe retornar al prompt inmediatamente luego de lanzar al programa a ejecutarse en background.
+Un ampersand **&** al final de la línea de comando indica que la  _shell_  debe retornar al prompt inmediatamente luego de lanzar al programa a ejecutarse en background.
 
 Cuando se comienza un trabajo en background, se debe imprimir un mensaje indicando su Trabajo y su ID de proceso.
+
 ```Bash
 [<job id>] <process id>
 ```
+
 Ejemplo:
+
 ```Bash
 $ echo 'hola' &
 [1] 10506
 hola
 ```
+
 Cuando un trabajo es parado (stopped) por una señal, se debe imprimir el siguiente mensaje:
+
 ```Bash
 [<job id>] <process id> suspended by signal <signal number>
 ```
+
 Cuando un trabajo es continuado (resumed) por la señal **SIGCONT**, se debe imprimir el siguiente mensaje:
+
 ```Bash
 [<job id>] <process id> resumed
 ```
+
 Finalmente, gestionar correctamente los procesos lanzados en background para evitar la generación de procesos zombies.
 
 ## Signal Handling
-Si se ingresa alguna de las combinaciones CTRL-C, CTRL-Z o CTRL-\, las señales resultantes (SIGINT, SIGTSTP, SIGQUIT respectivamente) deben ser enviadas al trabajo (job) en ejecución de primer plano en vez de a _myshell_. Si no hay un trabajo (job) en ejecución de primer plano, no debe suceder nada.
+Si se ingresa alguna de las combinaciones CTRL-C, CTRL-Z o CTRL-\, las señales resultantes (SIGINT, SIGTSTP, SIGQUIT respectivamente) deben ser enviadas al trabajo (job) en ejecución de primer plano en vez de a  _myshell_ . Si no hay un trabajo (job) en ejecución de primer plano, no debe suceder nada.
 
 ## Pipe
-_myshell_ provee la funcionalidad de un pipe a través del operador ‘|’ (pipe). El mismo conecta la salida estándar del proceso lazando por el comando de la izquierda del pipe con la entrada estándar del proceso que se genera con el comando a la derecha del pipe.
+_myshell_  provee la funcionalidad de un pipe a través del operador ‘|’ (pipe). El mismo conecta la salida estándar del proceso lazando por el comando de la izquierda del pipe con la entrada estándar del proceso que se genera con el comando a la derecha del pipe.
 
 Ejemplos:
+
 ```Bash
 $ last <username> | wc -l
 $ ps aux | grep firefox
 $ grep bash /etc/passwd | cut -d “:” -f 1 | sort -r
 ```
+
 
 ### Responder:
 ¿Dónde se encuentran los pipes en el filesystem, qué atributos tienen?
