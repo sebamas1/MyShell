@@ -44,7 +44,13 @@ static void parsearComando(char *line) {
 		changeDirectory(argument);
 	}
 	if (strcmp(comando, "echo") == 0) {
-		echo(argument);
+		echo(line);
+	}
+	if (strcmp(comando, "quit") == 0) {
+		quit = true;
+	}
+	if (strcmp(comando, "clr") == 0) {
+		system("clear");
 	}
 }
 int main() {
@@ -55,9 +61,6 @@ int main() {
 		size_t len = 0;
 		getline(&line, &len, stdin);
 		parsearComando(line);
-		if (strcmp(line, "quit\n") == 0) {
-			quit = true;
-		}
 		free(line);
 	}
 	return 0;
