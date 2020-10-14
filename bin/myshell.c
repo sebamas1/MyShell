@@ -10,8 +10,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <sys/types.h>
+#include <limits.h>
+#include <grp.h>
+#include "InCommands/internalCommands.h"
 
-#define PATH_MAX 500
 bool quit = false;
 
 int printPrompt() {
@@ -20,7 +23,9 @@ int printPrompt() {
 		char prompt[PATH_MAX];
 		strcpy(prompt, getenv("USER"));
 		strcat(prompt, "@");
-		strcat(prompt, getenv("USER"));
+		register gid_t gid;
+		gid = getgid();
+		strcat(prompt, getgrgid(gid)->gr_name);
 		strcat(prompt, ":~");
 		strcat(prompt, cwd);
 		strcat(prompt, "$");
@@ -31,6 +36,17 @@ int printPrompt() {
 		return 1;
 	}
 }
+static void parsearComando(char *line) {
+	char comando[10];
+	char argument[PATH_MAX];
+	sscanf(line, "%9s %4095s", comando, argument);
+	if (strcmp(comando, "cd") == 0) {
+		changeDirectory(argument);
+	}
+	if (strcmp(comando, "echo") == 0) {
+		echo(argument);
+	}
+}
 int main() {
 	while (!quit) {
 		printPrompt();
@@ -38,8 +54,8 @@ int main() {
 		char *line = NULL;
 		size_t len = 0;
 		getline(&line, &len, stdin);
-		printf("Comando: %s", line);
-		if(strcmp(line, "quit\n") == 0){
+		parsearComando(line);
+		if (strcmp(line, "quit\n") == 0) {
 			quit = true;
 		}
 		free(line);
