@@ -14,10 +14,17 @@
 #define PATH_MAX 500
 bool quit = false;
 
-int printCurrDir() {
+int printPrompt() {
 	char cwd[PATH_MAX];
 	if (getcwd(cwd, sizeof(cwd)) != NULL) {
-		printf("-> %s : ", cwd);
+		char prompt[PATH_MAX];
+		strcpy(prompt, getenv("USER"));
+		strcat(prompt, "@");
+		strcat(prompt, getenv("USER"));
+		strcat(prompt, ":~");
+		strcat(prompt, cwd);
+		strcat(prompt, "$");
+		printf("-> %s ", prompt);
 		return 0;
 	} else {
 		perror("getcwd() error");
@@ -26,7 +33,7 @@ int printCurrDir() {
 }
 int main() {
 	while (!quit) {
-		printCurrDir();
+		printPrompt();
 
 		char *line = NULL;
 		size_t len = 0;
