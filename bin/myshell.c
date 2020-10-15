@@ -15,9 +15,16 @@
 #include <grp.h>
 #include "InCommands/internalCommands.h"
 
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[1;36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 bool quit = false;
 
-int printPrompt() {
+static int printPrompt() {
 	char cwd[PATH_MAX];
 	if (getcwd(cwd, sizeof(cwd)) != NULL) {
 		char prompt[PATH_MAX];
@@ -26,10 +33,12 @@ int printPrompt() {
 		register gid_t gid;
 		gid = getgid();
 		strcat(prompt, getgrgid(gid)->gr_name);
-		strcat(prompt, ":~");
+		printf(ANSI_COLOR_YELLOW "%s", prompt);
+		memset(prompt, 0, sizeof(prompt));
+		printf(ANSI_COLOR_RESET "%s", ":");
 		strcat(prompt, cwd);
 		strcat(prompt, "$");
-		printf("-> %s ", prompt);
+		printf(ANSI_COLOR_CYAN "%s " ANSI_COLOR_RESET, prompt);
 		return 0;
 	} else {
 		perror("getcwd() error");
@@ -38,10 +47,9 @@ int printPrompt() {
 }
 static void parsearComando(char *line) {
 	char comando[10];
-	char argument[PATH_MAX];
-	sscanf(line, "%9s %4095s", comando, argument);
+	sscanf(line, "%9s", comando);
 	if (strcmp(comando, "cd") == 0) {
-		changeDirectory(argument);
+		changeDir(line);
 	}
 	if (strcmp(comando, "echo") == 0) {
 		echo(line);

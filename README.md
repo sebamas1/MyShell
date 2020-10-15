@@ -29,9 +29,9 @@ _myshell_ debe soportar los siguientes comandos internos:
 Entradas del usuario que no sean comandos internos deben ser interpretados como la invocación de un programa. La misma tiene que ser realizada mediante **fork** y **exec**.
 
 ## Batch File
-_myshell_ debe ser capaz de tomar sus comandos a ejecutar desde un archivo. Por ejemplo, la _shell_ puede ser invocada con un argumento **myshell batchfile**. El _batchfile_ contiene un conjunto de comandos de línea para que la shell ejecute. 
+_myshell_  debe ser capaz de tomar sus comandos a ejecutar desde un archivo. Por ejemplo, la  _shell_  puede ser invocada con un argumento **myshell batchfile**. El  _batchfile_  contiene un conjunto de comandos de línea para que la shell ejecute. 
 
-Cuando se alcance el fin de archivo (_EOF_), _myshell_ debe cerrarse.
+Cuando se alcance el fin de archivo ( _EOF_ ),  _myshell_  debe cerrarse.
 
 Notar que si  _myshell_  se ejecuta sin argumento (./myshell), se tiene que mostrar el command prompt y se debe esperar a comandos del usuario vía stdin.
 

@@ -1,6 +1,6 @@
-CFLAGS = -Wall -pedantic -Werror -Wextra -Wconversion -std=gnu11
+CFLAGS = -g -Wall -pedantic -Werror -Wextra -Wconversion -std=gnu11
 
-myshell: obj/myshell.o obj/internalCommands.o
+myshell: obj/myshell.o obj/internalCommands.o obj/LinkedList.o
 	gcc $(CFLAGS) -o myshell $^
 	
 obj/myshell.o: bin/myshell.c 
@@ -11,6 +11,9 @@ obj/myshell.o: bin/myshell.c
 obj/internalCommands.o: bin/InCommands/internalCommands.h bin/InCommands/internalCommands.c
 	gcc $(CFLAGS) -c bin/InCommands/internalCommands.c -o obj/internalCommands.o
 	
+obj/LinkedList.o: bin/util/LinkedList.h bin/util/LinkedList.c
+	gcc $(CFLAGS) -c bin/util/LinkedList.c -o obj/LinkedList.o
+
 clean:
 	rm -f obj/*.o
 	rmdir obj
