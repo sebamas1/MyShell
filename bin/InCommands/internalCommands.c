@@ -12,9 +12,10 @@
 #include "../util/LinkedList.h"
 
 int changeDir(char *comando) {
-	struct Nodo *actual = crearLinkedList(comando);
-	if (!(getListSize() == 2)) {
-		borrarLista(getCabeza());
+	struct Nodo *cabeza = crearLinkedList(comando);
+	struct Nodo *actual = cabeza;
+	if (!(cabeza->listSize == 2)) {
+		borrarLista(cabeza);
 		fprintf(stderr, "Para cd: cantidad de argumentos invalida.\n");
 		return -1;
 	}
@@ -22,7 +23,7 @@ int changeDir(char *comando) {
 	char *path = find(actual, 1)->palabra;
 	*(path + strlen(path) - 1) = '\0';
 	if (chdir(path) != 0) {
-		borrarLista(getCabeza());
+		borrarLista(cabeza);
 		perror("No se encuentra el directorio especificado");
 		return -1;
 	} else {
@@ -32,31 +33,35 @@ int changeDir(char *comando) {
 			strcpy(pwd, "PWD=");
 			strcat(pwd, cwd);
 			if (putenv(pwd) != 0) {
-				borrarLista(getCabeza());
+				borrarLista(cabeza);
 				perror("putenv() error");
 				return -1;
 			}
 		} else {
-			borrarLista(getCabeza());
+			borrarLista(cabeza);
 			perror("getcwd() error");
 			return -1;
 		}
 	}
-	borrarLista(getCabeza());
+	borrarLista(cabeza);
 	return 0;
 }
 
 int echo(char *texto) {
-	struct Nodo *actual = crearLinkedList(texto);
-	actual = actual->siguienteNodo;
+	struct Nodo *cabeza = crearLinkedList(texto);
+	struct Nodo *actual = cabeza;
+	actual = actual->siguienteNodo; //saltea la primera porque es echo
 	while (actual != NULL) {
-		printf("%s ", actual->palabra);
-		actual = actual->siguienteNodo;
 		if (actual->siguienteNodo == NULL) {
 			printf("%s", actual->palabra);
+			borrarLista(cabeza);
 			return 0;
+		} else {
+			printf("%s ", actual->palabra);
+			actual = actual->siguienteNodo;
 		}
 	}
+	borrarLista(cabeza);
 	return 0;
 }
 

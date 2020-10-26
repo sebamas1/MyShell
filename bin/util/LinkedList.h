@@ -11,6 +11,7 @@
 struct Nodo {
 	struct Nodo *siguienteNodo;
 	int index;
+	int listSize;
 	char *palabra;
 };
 struct Nodo* crearLinkedList(char *string);

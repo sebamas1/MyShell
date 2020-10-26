@@ -6,6 +6,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "LinkedList.h"
 
 static struct Nodo *head = NULL;
@@ -13,6 +14,7 @@ static struct Nodo *current = NULL;
 static int listSize = 0;
 
 static void guardarPalabra(char *palabra) {
+	if(strcmp(palabra, "\n") == 0) return;
 	struct Nodo *nodo = (struct Nodo*) malloc(sizeof(struct Nodo));
 	nodo->palabra = palabra;
 	if (current == NULL) {
@@ -28,30 +30,30 @@ static void guardarPalabra(char *palabra) {
 		current->index = index + 1;
 	}
 }
-struct Nodo* getCabeza(){
-	return head;
-}
 
 struct Nodo* crearLinkedList(char *string){
 	guardarPalabra(strtok(string, " "));
 	char *tmp;
 	while((tmp = strtok(NULL, " ")) != NULL){
-		guardarPalabra(tmp);
+			guardarPalabra(tmp);
 	}
 	current->siguienteNodo = NULL;
-    return getCabeza();
-}
-int getListSize(){
-	return listSize;
+	struct Nodo *nodo = head;
+	nodo->listSize = listSize;
+	head = NULL;
+	current = NULL;
+	listSize = 0;
+    return nodo;
 }
 struct Nodo* find(struct Nodo *nodo, int index){
-	if(index <= listSize -1){
+	if(index <= nodo->listSize -1){
 		struct Nodo *tmp = nodo;
 		while(tmp->index != index){
 			tmp = tmp->siguienteNodo;
 		}
 		return tmp;
 	} else {
+		fprintf(stderr, "Algo fallo en la funcion find de la linked list");
 		exit(EXIT_FAILURE); //si termina aca el programa, es tu culpa por poner un indice mal en algun lado
 	}
 }

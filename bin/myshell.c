@@ -14,6 +14,7 @@
 #include <limits.h>
 #include <grp.h>
 #include "InCommands/internalCommands.h"
+#include "ProgramInvocation/programInvocation.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -50,16 +51,16 @@ static void parsearComando(char *line) {
 	sscanf(line, "%9s", comando);
 	if (strcmp(comando, "cd") == 0) {
 		changeDir(line);
-	}
+	} else
 	if (strcmp(comando, "echo") == 0) {
 		echo(line);
-	}
+	} else
 	if (strcmp(comando, "quit") == 0) {
 		quit = true;
-	}
+	} else
 	if (strcmp(comando, "clr") == 0) {
 		system("clear");
-	}
+	} //else programInvocation();
 }
 int main() {
 	while (!quit) {
