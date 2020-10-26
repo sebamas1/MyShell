@@ -14,11 +14,6 @@
 int changeDir(char *comando) {
 	struct Nodo *cabeza = crearLinkedList(comando);
 	struct Nodo *actual = cabeza;
-	if (!(cabeza->listSize == 2)) {
-		borrarLista(cabeza);
-		fprintf(stderr, "Para cd: cantidad de argumentos invalida.\n");
-		return -1;
-	}
 
 	char *path = find(actual, 1)->palabra;
 	*(path + strlen(path) - 1) = '\0';
