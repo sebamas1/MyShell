@@ -64,6 +64,9 @@ void borrarLista(struct Nodo *nodo){
 	if(nodo == NULL){
 		return;
 	}
+	while(nodo->index != 0){
+		nodo = nodo->anteriorNodo;
+	}
 	struct Nodo *next = nodo->siguienteNodo;
 	while(next != NULL){
 		free(nodo);

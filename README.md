@@ -19,7 +19,7 @@ username@groupname:~$
 ```
 
 ## Internal commands
-_myshell_ debe soportar los siguientes comandos internos:
+_myshell_  debe soportar los siguientes comandos internos:
 - **cd \<directorio\>**: cambia el directorio actual a \<directorio\>. Si <directory> no está presente, reporta el directorio actual. Si el directorio no existe se debe imprimir un error apropiado. Además, este comando debe cambiar la variable de entorno PWD.
 - **clr** : limpia la pantalla
 - **echo \<comentario\>**: muestra <comentario> en la pantalla seguido por una línea nueva. (multiple espacios/tabs pueden ser reducidos a un espacio).

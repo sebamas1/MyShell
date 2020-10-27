@@ -49,23 +49,20 @@ static int printPrompt() {
 static void parsearComando(char *line) {
 	char comando[10];
 	sscanf(line, "%9s", comando);
-	if(strcmp(line, "\n") == 0){
+	if (strcmp(line, "\n") == 0) {
 		return;
-	} else
-	if (strcmp(comando, "cd") == 0) {
+	} else if (strcmp(comando, "cd") == 0) {
 		changeDir(line);
-	} else
-	if (strcmp(comando, "echo") == 0) {
+	} else if (strcmp(comando, "echo") == 0) {
 		echo(line);
-	} else
-	if (strcmp(comando, "quit") == 0) {
+	} else if (strcmp(comando, "quit") == 0) {
 		quit = true;
-	} else
-	if (strcmp(comando, "clr") == 0) {
+	} else if (strcmp(comando, "clr") == 0) {
 		system("clear");
-	} else programInvocation(line);
+	} else
+		programInvocation(line);
 }
-int main() {
+static void ejecucionNormal() {
 	while (!quit) {
 		printPrompt();
 
@@ -75,5 +72,32 @@ int main() {
 		parsearComando(line);
 		free(line);
 	}
-	return 0;
+}
+static void ejecucionBatchFile(char *path) {
+	FILE *archivo = fopen(path, "r");
+	if (archivo == NULL) {
+		archivo = fopen("./batch.sh", "r");
+		if (archivo == NULL) {
+			printf("Batch file no encontrado.\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	char *comando = NULL;
+	size_t len = 0;
+	ssize_t read;
+	while ((read = getline(&comando, &len, archivo)) != -1) {
+		parsearComando(comando);
+	}
+}
+int main(int argc, char *argv[]) {
+	if (argc > 2) {
+		fprintf(stderr, "Cantidad de argumentos incorrecta.\n");
+		exit(EXIT_FAILURE);
+	} else if (argc == 2) {
+		ejecucionBatchFile(argv[1]);
+		return 0;
+	} else {
+		ejecucionNormal();
+		return 0;
+	}
 }

@@ -54,5 +54,7 @@ int programInvocation(char *comando)
 	/* Wait for the child process to complete. */
 	wait(&child_status);
 
+	borrarLista(cabeza);
+
 	return 0;
 }

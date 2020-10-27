@@ -1,4 +1,4 @@
-CFLAGS = -g
+CFLAGS = -g -Wall -pedantic -Werror -Wextra -Wconversion -std=gnu11
 
 myshell: obj/myshell.o obj/internalCommands.o obj/LinkedList.o obj/programInvocation.o
 	gcc $(CFLAGS) -o myshell $^
