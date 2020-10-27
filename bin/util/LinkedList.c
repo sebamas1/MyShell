@@ -14,8 +14,6 @@ static struct Nodo *current = NULL;
 static int listSize = 0;
 
 static void guardarPalabra(char *palabra) {
-	if(strcmp(palabra, "\n") == 0) return;
-	if(strcmp(palabra, "\t") == 0) return;
 	struct Nodo *nodo = (struct Nodo*) malloc(sizeof(struct Nodo));
 	nodo->palabra = palabra;
 	if (current == NULL) {
@@ -35,9 +33,9 @@ static void guardarPalabra(char *palabra) {
 }
 
 struct Nodo* crearLinkedList(char *string){
-	guardarPalabra(strtok(string, " \t"));
+	guardarPalabra(strtok(string, " \t\n"));
 	char *tmp;
-	while((tmp = strtok(NULL, " \t")) != NULL){
+	while((tmp = strtok(NULL, " \t\n")) != NULL){
 			guardarPalabra(tmp);
 	}
 	current->siguienteNodo = NULL;

@@ -60,7 +60,7 @@ static void parsearComando(char *line) {
 	} else
 	if (strcmp(comando, "clr") == 0) {
 		system("clear");
-	} //else programInvocation();
+	} else programInvocation(line);
 }
 int main() {
 	while (!quit) {

@@ -8,6 +8,6 @@
 #ifndef BIN_PROGRAMINVOCATION_PROGRAMINVOCATION_H_
 #define BIN_PROGRAMINVOCATION_PROGRAMINVOCATION_H_
 
-int programInvocation();
+int programInvocation(char *comando);
 
 #endif /* BIN_PROGRAMINVOCATION_PROGRAMINVOCATION_H_ */
