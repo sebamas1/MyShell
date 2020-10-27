@@ -1,3 +1,4 @@
+
 /*
  * internalCommands.c
  *
@@ -16,7 +17,7 @@ int changeDir(char *comando) {
 	struct Nodo *actual = cabeza;
 
 	char *path = find(actual, 1)->palabra;
-	*(path + strlen(path) - 1) = '\0';
+	*(path + strlen(path)) = '\0';
 	if (chdir(path) != 0) {
 		borrarLista(cabeza);
 		perror("No se encuentra el directorio especificado");
@@ -48,7 +49,7 @@ int echo(char *texto) {
 	actual = actual->siguienteNodo; //saltea la primera porque es echo
 	while (actual != NULL) {
 		if (actual->siguienteNodo == NULL) {
-			printf("%s", actual->palabra);
+			printf("%s\n", actual->palabra);
 			borrarLista(cabeza);
 			return 0;
 		} else {

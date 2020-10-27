@@ -47,14 +47,14 @@ struct Nodo* crearLinkedList(char *string){
     return nodo;
 }
 struct Nodo* find(struct Nodo *nodo, int index){
-	if(index <= nodo->listSize -1){
+	if(index <= nodo->listSize -1){ //acordate de arreglar esto
 		struct Nodo *tmp = nodo;
 		while(tmp->index != index){
 			tmp = tmp->siguienteNodo;
 		}
 		return tmp;
 	} else {
-		fprintf(stderr, "Algo fallo en la funcion find de la linked list");
+		fprintf(stderr, "Algo fallo en la funcion find de la linked list\n");
 		exit(EXIT_FAILURE); //si termina aca el programa, es tu culpa por poner un indice mal en algun lado
 	}
 }

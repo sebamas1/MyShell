@@ -49,6 +49,9 @@ static int printPrompt() {
 static void parsearComando(char *line) {
 	char comando[10];
 	sscanf(line, "%9s", comando);
+	if(strcmp(line, "\n") == 0){
+		return;
+	} else
 	if (strcmp(comando, "cd") == 0) {
 		changeDir(line);
 	} else
