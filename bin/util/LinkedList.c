@@ -47,22 +47,26 @@ struct Nodo* crearLinkedList(char *string){
     return nodo;
 }
 struct Nodo* find(struct Nodo *nodo, int index){
-	if(index <= nodo->listSize -1){ //acordate de arreglar esto
-		struct Nodo *tmp = nodo;
+	struct Nodo *tmp = nodo;
+	while(tmp->index != 0){
+		tmp = tmp->anteriorNodo;
+	}
+	if(index < tmp->listSize){
 		while(tmp->index != index){
 			tmp = tmp->siguienteNodo;
 		}
 		return tmp;
 	} else {
-		fprintf(stderr, "Algo fallo en la funcion find de la linked list\n");
+		fprintf(stderr, "Algo fallo en la funcion find de la linked list(pediste un nodo inexistente.\n");
 		exit(EXIT_FAILURE); //si termina aca el programa, es tu culpa por poner un indice mal en algun lado
 	}
 }
 
-void borrarLista(struct Nodo *nodo){
+int borrarLista(struct Nodo *nodo){
 	listSize = 0;
 	if(nodo == NULL){
-		return;
+		fprintf(stderr, "borrarLista: pasaste un nodo que apunta a NULL\n");
+		return -1;
 	}
 	while(nodo->index != 0){
 		nodo = nodo->anteriorNodo;
@@ -76,4 +80,16 @@ void borrarLista(struct Nodo *nodo){
 	free(nodo);
 	head = NULL;
 	current = NULL;
+	return 0;
+}
+int getSize(struct Nodo *nodo){
+	if(nodo == NULL){
+		fprintf(stderr, "getSize: pasaste un nodo que apunta a NULL");
+		return -1;
+	}
+	struct Nodo *tmp = nodo;
+	while(tmp->index != 0){
+		tmp = tmp->anteriorNodo;
+	}
+	return tmp->listSize;
 }

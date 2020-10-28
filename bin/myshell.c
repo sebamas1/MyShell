@@ -58,7 +58,7 @@ static void parsearComando(char *line) {
 	} else if (strcmp(comando, "quit") == 0) {
 		quit = true;
 	} else if (strcmp(comando, "clr") == 0) {
-		system("clear");
+		system("clear");      //ACORDATE QUE TENES QUE CAMBIAR ESTO
 	} else
 		programInvocation(line);
 }

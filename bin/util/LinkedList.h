@@ -16,7 +16,8 @@ struct Nodo {
 	char *palabra;
 };
 struct Nodo* crearLinkedList(char *string);
-void borrarLista(struct Nodo *nodo);
+int borrarLista(struct Nodo *nodo);
 struct Nodo* find(struct Nodo* nodo, int index);
+int getSize(struct Nodo *nodo);
 
 #endif /* BIN_UTIL_LINKEDLIST_H_ */
