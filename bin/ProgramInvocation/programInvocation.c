@@ -13,10 +13,13 @@
 #include <stdbool.h>
 #include <string.h>
 #include <fcntl.h>
+#include <limits.h>
 #include "../util/LinkedList.h"
 
 bool comando_correcto = true;
 bool io_redirect = false;
+int saved_stdin;
+int saved_stdout;
 struct Nodo *input;
 struct Nodo *output;
 /*
@@ -53,14 +56,23 @@ static bool parseIOredirection(struct Nodo *nodo) {
 	}
 }
 static int redirectIO(struct Nodo *input, struct Nodo *output) {
+	saved_stdin = dup(0);
+	saved_stdout = dup(1);
+
 	int input_file = open(input->palabra, O_RDONLY, 0777);
 	if (input_file == -1) {
-		io_redirect = false;
-		return -1;
+		char cwd[PATH_MAX + 3];
+		strcpy(cwd, "./");
+		strcat(cwd, input->palabra);
+		int input_file = open(cwd, O_RDONLY, 0777);
+		if(input_file == -1){
+			io_redirect = false;
+			return -1;
+		}
 	}
 	dup2(input_file, 0);
 	if (output != NULL) {
-		int output_file = open(output->palabra, O_WRONLY | O_CREAT, 0777);
+		int output_file = open(output->palabra, O_WRONLY | O_CREAT, 0644);
 		if (output_file == -1) {
 			io_redirect = false;
 			return -1;
@@ -73,6 +85,7 @@ static int redirectIO(struct Nodo *input, struct Nodo *output) {
 
 static int spawn(char *program, char **arg_list) {
 	if (!comando_correcto) {
+		comando_correcto = true;
 		return -1;
 	}
 	if (io_redirect) {
@@ -118,6 +131,9 @@ int programInvocation(char *comando) {
 
 	/* Wait for the child process to complete. */
 	wait(&child_status);
+
+	dup2(saved_stdin, 0);
+	dup2(saved_stdout, 1);
 
 	borrarLista(lista);
 

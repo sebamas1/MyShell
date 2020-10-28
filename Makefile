@@ -1,11 +1,11 @@
-CFLAGS = -g #-Wall -pedantic -Werror -Wextra -Wconversion -std=gnu11
+CFLAGS = -g -Wall -pedantic -Werror -Wextra -Wconversion -std=gnu11
 
 myshell: obj/myshell.o obj/internalCommands.o obj/LinkedList.o obj/programInvocation.o
 	gcc $(CFLAGS) -o myshell $^
 	
 obj/myshell.o: bin/myshell.c 
 	mkdir -p obj
-	#cppcheck --enable=all ./bin #style,performance,portability
+	cppcheck --enable=all ./bin #style,performance,portability
 	gcc $(CFLAGS) -c bin/myshell.c -o obj/myshell.o
 	
 obj/internalCommands.o: bin/InCommands/internalCommands.h bin/InCommands/internalCommands.c
