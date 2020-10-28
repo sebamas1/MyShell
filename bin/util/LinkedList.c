@@ -93,3 +93,29 @@ int getSize(struct Nodo *nodo){
 	}
 	return tmp->listSize;
 }
+struct Nodo* borrarNodo(struct Nodo *nodo){
+	struct Nodo *tmp;
+	if(nodo == NULL){
+		fprintf(stderr, "borrarNodo: pasaste un nodo que apunta a NULL");
+		return NULL;
+	}
+	if(nodo->anteriorNodo == NULL){
+		tmp = nodo->siguienteNodo;
+		tmp->anteriorNodo = NULL;
+		free(nodo);
+		return tmp;
+	} else if(nodo->siguienteNodo == NULL){
+		tmp = nodo->anteriorNodo;
+		tmp->siguienteNodo = NULL;
+		free(nodo);
+		return tmp;
+	} else {
+		struct Nodo *aux;
+		aux = nodo->siguienteNodo;
+		tmp = nodo->anteriorNodo;
+		tmp->siguienteNodo = aux;
+		aux->anteriorNodo = tmp;
+		free(nodo);
+		return tmp;
+	}
+}
