@@ -110,12 +110,12 @@ struct Nodo* borrarNodo(struct Nodo *nodo){
 		free(nodo);
 		return tmp;
 	} else {
-		struct Nodo *aux;
-		aux = nodo->siguienteNodo;
+		struct Nodo *siguiente;
+		siguiente = nodo->siguienteNodo;
 		tmp = nodo->anteriorNodo;
-		tmp->siguienteNodo = aux;
-		aux->anteriorNodo = tmp;
+		tmp->siguienteNodo = siguiente;
+		siguiente->anteriorNodo = tmp;
 		free(nodo);
-		return tmp;
+		return siguiente;
 	}
 }
