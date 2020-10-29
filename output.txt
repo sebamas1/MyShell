@@ -1,9 +1,0 @@
-total 68
--rw-rw-r-- 1 sebastian sebastian   203 oct 28 18:18 batch.sh
-drwxrwxr-x 5 sebastian sebastian  4096 oct 27 18:48 bin
--rw-rw-r-- 1 sebastian sebastian    27 oct 28 21:08 input.txt
--rw-rw-r-- 1 sebastian sebastian   867 oct 28 16:08 Makefile
--rwxrwxr-x 1 sebastian sebastian 34904 oct 28 21:13 myshell
-drwxrwxr-x 2 sebastian sebastian  4096 oct 28 21:13 obj
--rw-r--r-- 1 sebastian sebastian     8 oct 28 21:16 output.txt
--rw-rw-r-- 1 sebastian sebastian  4405 oct 27 18:48 README.md
