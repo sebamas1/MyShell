@@ -1,4 +1,3 @@
-
 /*
  * internalCommands.c
  *
@@ -10,7 +9,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #include "../util/LinkedList.h"
+#include "../ProgramParsing/programParsing.h"
 
 int changeDir(char *comando) {
 	struct Nodo *cabeza = crearLinkedList(comando);
@@ -50,20 +52,44 @@ int changeDir(char *comando) {
 }
 
 int echo(char *texto) {
-	struct Nodo *cabeza = crearLinkedList(texto);
-	struct Nodo *actual = cabeza;
-	actual = actual->siguienteNodo; //saltea la primera porque es echo
-	while (actual != NULL) {
-		if (actual->siguienteNodo == NULL) {
-			printf("%s\n", actual->palabra);
-			borrarLista(cabeza);
-			return 0;
-		} else {
-			printf("%s ", actual->palabra);
-			actual = actual->siguienteNodo;
-		}
+	struct Nodo *lista = crearLinkedList(texto);
+	if (generarComandoParseado(lista) == -1) {
+		fprintf(stderr, "Error en el comando echo.\n");
+		return -1;
 	}
-	borrarLista(cabeza);
+	if (isatty(STDIN_FILENO)) {
+		lista = lista->siguienteNodo; //saltea la primera porque es echo
+		while (lista != NULL) {
+			if (lista->siguienteNodo == NULL) {
+				printf("%s\n", lista->palabra);
+				restaurarSTDIO();
+				borrarLista(lista);
+				return 0;
+			} else {
+				printf("%s ", lista->palabra);
+				lista = lista->siguienteNodo;
+			}
+		}
+	} else {
+		struct stat st;
+		fstat(0, &st);
+		long int file_size = st.st_size;
+		char buff[file_size];
+		read(0, buff, sizeof(buff));
+		write(1, buff, sizeof(buff));
+	}
+	restaurarSTDIO(); //cuando se termina de usar generarComandoParseado() es necesario restaurar los STDIO
+	borrarLista(lista);
 	return 0;
 }
+/*
+ * bueno falta mejorar esta funcion:
+ * primero no funciona el input redirection, porque tenes que usar read y write supongo, estas
+ * leyendo de la lista siempre que escribis y eso esta mal
+ *
+ * segundo si el usuario ingresa echo < path, fijate que se borra la lista
+ * entera y salta segmentation fault
+ *
+ *
+ */
 

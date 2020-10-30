@@ -14,7 +14,7 @@
 #include <limits.h>
 #include <grp.h>
 #include "InCommands/internalCommands.h"
-#include "ProgramInvocation/programInvocation.h"
+#include "ProgramParsing/programParsing.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"

@@ -93,6 +93,15 @@ int getSize(struct Nodo *nodo){
 	}
 	return tmp->listSize;
 }
+static void actualizarLista(struct Nodo *nodo){
+	struct Nodo *tmp = nodo;
+	while(!(tmp == NULL)){
+		tmp->index--;
+		tmp = tmp->siguienteNodo;
+	}
+	tmp = nodo;
+	find(tmp, 0)->listSize--;
+}
 struct Nodo* borrarNodo(struct Nodo *nodo){
 	struct Nodo *tmp;
 	if(nodo == NULL){
@@ -102,12 +111,15 @@ struct Nodo* borrarNodo(struct Nodo *nodo){
 	if(nodo->anteriorNodo == NULL){
 		tmp = nodo->siguienteNodo;
 		tmp->anteriorNodo = NULL;
+		tmp->listSize = nodo->listSize - 1;
 		free(nodo);
+		tmp->index = 0;
 		return tmp;
 	} else if(nodo->siguienteNodo == NULL){
 		tmp = nodo->anteriorNodo;
 		tmp->siguienteNodo = NULL;
 		free(nodo);
+		find(tmp, 0)->listSize--;
 		return tmp;
 	} else {
 		struct Nodo *siguiente;
@@ -116,6 +128,7 @@ struct Nodo* borrarNodo(struct Nodo *nodo){
 		tmp->siguienteNodo = siguiente;
 		siguiente->anteriorNodo = tmp;
 		free(nodo);
+		actualizarLista(siguiente);
 		return siguiente;
 	}
 }
