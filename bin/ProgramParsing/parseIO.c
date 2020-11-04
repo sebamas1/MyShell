@@ -1,19 +1,16 @@
 /*
- * programInvocation.c
+ * ParseIO.c
  *
- *  Created on: 26 oct. 2020
+ *  Created on: 4 nov. 2020
  *      Author: sebastian
  */
-
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <stdbool.h>
 #include <string.h>
+#include <stdbool.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include <limits.h>
+#include <unistd.h>
 #include "../util/LinkedList.h"
 
 static bool comando_correcto = true;
@@ -63,7 +60,6 @@ static int redirectOutput(struct Nodo *output) {
  * En caso de encontrarun caracter de IO valido, retorna una
  * referencia al nodo que esta despues del path tomado por > ó <.
  * En caso de no encontrar un caracter valido de IO, retorna el mismo nodo que se le paso como argument.
- * Si encuentra un formato invalido, retorna NULL
  */
 static struct Nodo* parseIOredirection(struct Nodo *lista) {
 	if (strncmp(lista->palabra, "<", 1) == 0) {
@@ -95,27 +91,11 @@ static struct Nodo* parseIOredirection(struct Nodo *lista) {
 	}
 	return lista;
 }
-static int spawn(char *program, char **arg_list) {
-	pid_t child_pid;
-
-	/* Duplicate this process. */
-	child_pid = fork();
-
-	if (child_pid != 0) {
-		return child_pid;
-	} else {
-		execvp(program, arg_list);
-
-		/* returns only if an error occurs. */
-		perror("Child process");
-		abort();
-	}
-}
 void restaurarSTDIO(){
 	dup2(saved_stdin, 0);
 	dup2(saved_stdout, 1);
 }
-int generarComandoParseado(struct Nodo *lista) {
+int generarComandoIOParseado(struct Nodo *lista) {
 	saved_stdin = dup(0);
 	saved_stdout = dup(1);
 
@@ -123,6 +103,12 @@ int generarComandoParseado(struct Nodo *lista) {
 	struct Nodo *tmp = find(lista, 0);
 	for (int i = 0; i < list_size; i++) {
 		tmp = parseIOredirection(tmp);
+		if(tmp == NULL){
+			restaurarSTDIO();
+			IO_encontrado = false;
+			fprintf(stderr, "Comando incompleto.\n");
+			return -1;
+		}
 		if (IO_encontrado) {
 			IO_encontrado = false;
 			list_size -= 2; //saque dos elementos de la lista
@@ -139,38 +125,4 @@ int generarComandoParseado(struct Nodo *lista) {
 		return -1;
 	}
 	return list_size;
-}
-int programInvocation(char *comando) {
-	struct Nodo *lista = crearLinkedList(comando);
-	int listSize = generarComandoParseado(lista);
-	if(listSize == -1){
-		restaurarSTDIO();
-		return -1;
-	}
-	char *arg_list[listSize + 1];
-	lista = find(lista, 0); //vuelvo al principio de la lista(si es que no estoy)
-	for (int i = 0; i < listSize; i++) {
-		if (lista != NULL) {
-			arg_list[i] = lista->palabra;
-		}
-
-		if (i < listSize - 1) { //podria perder la ref. y despues no puedo limpiar la lista
-			lista = lista->siguienteNodo;
-		}
-	}
-
-	arg_list[listSize] = NULL;
-
-	int child_status;
-
-	spawn(arg_list[0], arg_list);
-
-	/* Wait for the child process to complete. */
-	wait(&child_status);
-
-	restaurarSTDIO();
-
-	borrarLista(lista);
-
-	return 0;
 }

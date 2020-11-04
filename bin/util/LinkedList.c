@@ -110,6 +110,9 @@ struct Nodo* borrarNodo(struct Nodo *nodo){
 	}
 	if(nodo->anteriorNodo == NULL){
 		tmp = nodo->siguienteNodo;
+		if(tmp == NULL) {
+			return NULL;
+		}
 		tmp->anteriorNodo = NULL;
 		tmp->listSize = nodo->listSize - 1;
 		free(nodo);

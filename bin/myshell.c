@@ -14,7 +14,7 @@
 #include <limits.h>
 #include <grp.h>
 #include "InCommands/internalCommands.h"
-#include "ProgramParsing/programParsing.h"
+#include "ProgramParsing/programInvocation.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -88,6 +88,7 @@ static void ejecucionBatchFile(char *path) {
 	while ((read = getline(&comando, &len, archivo)) != -1) {
 		parsearComando(comando);
 	}
+	fclose(archivo);
 }
 int main(int argc, char *argv[]) {
 	if (argc > 2) {

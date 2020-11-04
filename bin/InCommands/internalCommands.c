@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include "../util/LinkedList.h"
-#include "../ProgramParsing/programParsing.h"
+#include "../ProgramParsing/parseIO.h"
 
 int changeDir(char *comando) {
 	struct Nodo *cabeza = crearLinkedList(comando);
@@ -53,7 +53,7 @@ int changeDir(char *comando) {
 
 int echo(char *texto) {
 	struct Nodo *lista = crearLinkedList(texto);
-	if (generarComandoParseado(lista) == -1) {
+	if (generarComandoIOParseado(lista) == -1) {
 		fprintf(stderr, "Error en el comando echo.\n");
 		return -1;
 	}
@@ -82,14 +82,4 @@ int echo(char *texto) {
 	borrarLista(lista);
 	return 0;
 }
-/*
- * bueno falta mejorar esta funcion:
- * primero no funciona el input redirection, porque tenes que usar read y write supongo, estas
- * leyendo de la lista siempre que escribis y eso esta mal
- *
- * segundo si el usuario ingresa echo < path, fijate que se borra la lista
- * entera y salta segmentation fault
- *
- *
- */
 
