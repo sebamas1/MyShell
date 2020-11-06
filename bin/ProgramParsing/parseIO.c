@@ -91,23 +91,25 @@ static struct Nodo* parseIOredirection(struct Nodo *lista) {
 	}
 	return lista;
 }
-void restaurarSTDIO(){
+void restaurarSTDIO() {
 	dup2(saved_stdin, 0);
 	dup2(saved_stdout, 1);
 }
-int generarComandoIOParseado(struct Nodo *lista) {
+struct Nodo* generarComandoIOParseado(struct Nodo *lista) {
 	saved_stdin = dup(0);
 	saved_stdout = dup(1);
 
-	int list_size = getSize(lista);
 	struct Nodo *tmp = find(lista, 0);
+	int list_size = getSize(lista);
+
 	for (int i = 0; i < list_size; i++) {
 		tmp = parseIOredirection(tmp);
-		if(tmp == NULL){
+		if (tmp == NULL) {
 			restaurarSTDIO();
 			IO_encontrado = false;
+			comando_correcto = true;
 			fprintf(stderr, "Comando incompleto.\n");
-			return -1;
+			return NULL;
 		}
 		if (IO_encontrado) {
 			IO_encontrado = false;
@@ -119,10 +121,10 @@ int generarComandoIOParseado(struct Nodo *lista) {
 			}
 		}
 	}
-	if(!comando_correcto){
+	if (!comando_correcto) {
 		restaurarSTDIO();
 		comando_correcto = true;
-		return -1;
+		return NULL;
 	}
-	return list_size;
+	return find(tmp, 0);
 }

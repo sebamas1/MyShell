@@ -10,7 +10,7 @@
 
 #include "../util/LinkedList.h"
 
-int generarComandoIOParseado(struct Nodo *lista);
+struct Nodo* generarComandoIOParseado(struct Nodo *lista);
 void restaurarSTDIO();
 
 #endif /* BIN_PROGRAMPARSING_PARSEIO_H_ */

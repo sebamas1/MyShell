@@ -8,7 +8,7 @@
 #ifndef BIN_INCOMMANDS_INTERNALCOMMANDS_H_
 #define BIN_INCOMMANDS_INTERNALCOMMANDS_H_
 
-int changeDir(char *path);
-int echo(char *texto);
+int changeDir(struct Nodo *lista);
+int echo(struct Nodo *lista);
 
 #endif /* BIN_INCOMMANDS_INTERNALCOMMANDS_H_ */
