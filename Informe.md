@@ -3,6 +3,8 @@ pero habia un error en la escritura del output, me olvidaba de restaurar el inpu
 rarisimas, como leer del archivo redireccionado e intentar ejecutar las lineas de ese archivo como si fueran
 un program invocation.
 
+Al mandar una SIGSTOP a un child process todos los comandos subsecuentes se ejecutaban en background hasta que mandaba una señal de SIGCONT. Este bug me tomo VARIAS horas y se debia a una flag mal colocada en un waitpid.
+
 Bugs conocidos: 
 1_la redireccion de output provoca que el job id y el process id se impriman en el output seleccionado.
 
