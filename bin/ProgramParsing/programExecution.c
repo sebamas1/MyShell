@@ -18,6 +18,7 @@
 
 static bool quit = false;
 static struct Nodo *saved_list;
+static pid_t current_child_pid = -1;
 
 static int ejecutar_comando_interno() {
 	if (strcmp(saved_list->palabra, "cd") == 0) {
@@ -94,6 +95,7 @@ static int programInvocation(struct Nodo *lista, bool background) {
 		waitpid(child_pid, NULL, WNOHANG);
 		printf("[%i] %d\n", get_job_id(child_pid), child_pid);
 	} else {
+		current_child_pid = child_pid;
 		wait(&child_status);
 	}
 
@@ -113,4 +115,21 @@ void programExecution(struct Nodo *lista, bool background) {
 }
 bool terminateShell() {
 	return quit;
+}
+void stop_child(){
+	if(current_child_pid != -1){
+		kill(current_child_pid, SIGTSTP);
+		printf("\n%i suspended by signal %i\n", current_child_pid, SIGTSTP);
+		current_child_pid = -1;
+	} else {
+		puts("");
+	}
+}
+void sigint_child(){
+	if(current_child_pid != -1){
+		kill(current_child_pid, SIGINT);
+		current_child_pid = -1;
+	} else {
+		puts("");
+	}
 }

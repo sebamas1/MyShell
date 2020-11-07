@@ -51,7 +51,7 @@ static int printPrompt() {
 }
 static void ejecucionNormal() {
 	while (!programTerminated()) {
-		create_signal_handler();
+		create_suspension_and_zombie_handler();
 		if (sigsetjmp(env, 1) == 1) {
 			restaurarSTDIO(); //bueno, esta linea se necesita aca si o si, igual para el batch file
 			continue;
@@ -77,7 +77,7 @@ static void ejecucionBatchFile(char *path) {
 	size_t len = 0;
 	ssize_t read;
 	while ((read = getline(&comando, &len, archivo)) != -1) {
-		create_signal_handler();
+		create_suspension_and_zombie_handler();
 		if (sigsetjmp(env, 1) == 1) {
 			restaurarSTDIO();
 			continue;
@@ -87,6 +87,8 @@ static void ejecucionBatchFile(char *path) {
 	fclose(archivo);
 }
 int main(int argc, char *argv[]) {
+	create_SIGTSTP_handler();
+	create_SIGINT_handler();
 	if (argc > 2) {
 		fprintf(stderr, "Cantidad de argumentos incorrecta.\n");
 		exit(EXIT_FAILURE);

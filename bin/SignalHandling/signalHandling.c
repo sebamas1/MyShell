@@ -14,12 +14,12 @@
 #include "../ProgramParsing/programExecution.h"
 #include "jobs.h"
 
-void create_signal_handler() {
+void create_suspension_and_zombie_handler() {
 	struct sigaction sa;
-	void delete_zombies();
+	void check_signal_and_delete_zombies();
 
 	sigfillset(&sa.sa_mask);
-	sa.sa_handler = delete_zombies;
+	sa.sa_handler = check_signal_and_delete_zombies;
 	sa.sa_flags = 0;
 	sigaction(SIGCHLD, &sa, NULL);
 }
@@ -49,12 +49,36 @@ static void check_signals() {
 	}
 }
 
-void delete_zombies() {
+void check_signal_and_delete_zombies() {
 	check_signals();
+	siglongjmp(env, 1);
+}
 
-	pid_t kidpid;
-	while ((kidpid = waitpid(-1, NULL, WNOHANG)) > 0) {
-		fprintf(stdout, "\nProgram %i terminated\n", kidpid);
-	}
+void create_SIGTSTP_handler() {
+	struct sigaction sa;
+	void enviar_SIGSTP();
+
+	sigfillset(&sa.sa_mask);
+	sa.sa_handler = enviar_SIGSTP;
+	sa.sa_flags = 0;
+	sigaction(SIGTSTP, &sa, NULL);
+}
+void enviar_SIGSTP(){
+	stop_child();
+	siglongjmp(env, 1);
+}
+
+void create_SIGINT_handler() {
+	struct sigaction sa;
+	void enviar_SIGINT();
+
+	sigfillset(&sa.sa_mask);
+	sa.sa_handler = enviar_SIGINT;
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
+}
+
+void enviar_SIGINT(){
+	sigint_child();
 	siglongjmp(env, 1);
 }

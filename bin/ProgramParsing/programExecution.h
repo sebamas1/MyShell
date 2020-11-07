@@ -13,5 +13,7 @@
 
 int programExecution(struct Nodo *lista, bool background);
 bool terminateShell();
+void stop_child();
+void sigint_child();
 
 #endif /* BIN_PROGRAMPARSING_PROGRAMEXECUTION_H_ */
