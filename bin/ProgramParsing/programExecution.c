@@ -14,22 +14,41 @@
 #include <stdbool.h>
 #include "../util/LinkedList.h"
 #include "../InCommands/internalCommands.h"
+#include "../SignalHandling/jobs.h"
 
 static bool quit = false;
-static int *job_id[1000];
+static struct Nodo *saved_list;
 
-
-static int get_job_id(pid_t child_pid) {
-	for (int i = 1; i < 1000; i++) {
-		if (job_id[i] == NULL) {
-			job_id[i] = &child_pid;
-			return i;
-		}
+static int ejecutar_comando_interno() {
+	if (strcmp(saved_list->palabra, "cd") == 0) {
+		changeDir(saved_list);
+		return 0;
+	} else if (strcmp(saved_list->palabra, "echo") == 0) {
+		echo(saved_list);
+		return 0;
+	} else if (strcmp(saved_list->palabra, "quit") == 0) {
+		quit = true;
+		return 0;
+	} else if (strcmp(saved_list->palabra, "clr") == 0) {
+		system("clear");      //ACORDATE QUE TENES QUE CAMBIAR ESTO
+		return 0;
 	}
 	return -1;
 }
 
-static int spawn(char *program, char **arg_list) {
+static int get_job_id(pid_t child_pid) {
+	for (int i = 1; i < MAX_JOBS; i++) {
+
+		if (job_id[i] == 0) {
+			job_id[i] = child_pid;
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+static int spawn(char *program, char **arg_list, bool background) {
 	pid_t child_pid;
 
 	/* Duplicate this process. */
@@ -38,6 +57,11 @@ static int spawn(char *program, char **arg_list) {
 	if (child_pid != 0) {
 		return child_pid;
 	} else {
+		if (background) {
+			if (ejecutar_comando_interno() == 0) {
+				exit(EXIT_SUCCESS);
+			}
+		}
 		execvp(program, arg_list);
 
 		/* returns only if an error occurs. */
@@ -64,9 +88,10 @@ static int programInvocation(struct Nodo *lista, bool background) {
 
 	int child_status;
 
-	pid_t child_pid = spawn(arg_list[0], arg_list);
+	pid_t child_pid = spawn(arg_list[0], arg_list, background);
 
 	if (background) {
+		waitpid(child_pid, NULL, WNOHANG);
 		printf("[%i] %d\n", get_job_id(child_pid), child_pid);
 	} else {
 		wait(&child_status);
@@ -74,17 +99,16 @@ static int programInvocation(struct Nodo *lista, bool background) {
 
 	return 0;
 }
+
 void programExecution(struct Nodo *lista, bool background) {
-	if (strcmp(lista->palabra, "cd") == 0) {
-		changeDir(lista);
-	} else if (strcmp(lista->palabra, "echo") == 0) {
-		echo(lista);
-	} else if (strcmp(lista->palabra, "quit") == 0) {
-		quit = true;
-	} else if (strcmp(lista->palabra, "clr") == 0) {
-		system("clear");      //ACORDATE QUE TENES QUE CAMBIAR ESTO
-	} else
+	saved_list = lista;
+	if (background) {
 		programInvocation(lista, background);
+	} else {
+		if (ejecutar_comando_interno() == 0)
+			return;
+		programInvocation(lista, background);
+	}
 
 }
 bool terminateShell() {

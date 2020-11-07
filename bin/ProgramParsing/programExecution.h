@@ -8,6 +8,9 @@
 #ifndef BIN_PROGRAMPARSING_PROGRAMEXECUTION_H_
 #define BIN_PROGRAMPARSING_PROGRAMEXECUTION_H_
 
+#include <stdbool.h>
+#include "../util/LinkedList.h"
+
 int programExecution(struct Nodo *lista, bool background);
 bool terminateShell();
 
