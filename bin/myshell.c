@@ -13,7 +13,11 @@
 #include <sys/types.h>
 #include <limits.h>
 #include <grp.h>
+#include <signal.h>
+#include <setjmp.h>
+#include <sys/wait.h>
 #include "ProgramParsing/programParsing.h"
+#include "ProgramParsing/parseIO.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -22,6 +26,27 @@
 #define ANSI_COLOR_MAGENTA "\x1b[35m"
 #define ANSI_COLOR_CYAN    "\x1b[1;36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
+
+static sigjmp_buf env;
+
+static void create_handler() {
+	struct sigaction sa;
+	void delete_zombies();
+
+	sigfillset(&sa.sa_mask);
+	sa.sa_handler = delete_zombies;
+	sa.sa_flags = 0;
+	sigaction(SIGCHLD, &sa, NULL);
+}
+
+void delete_zombies() {
+	pid_t kidpid;
+
+	while ((kidpid = waitpid(-1, NULL, WNOHANG)) > 0) {
+		fprintf(stdout, "Child %i terminated\n", kidpid);
+	}
+	siglongjmp(env, 1);
+}
 
 static int printPrompt() {
 	char cwd[PATH_MAX];
@@ -46,6 +71,11 @@ static int printPrompt() {
 }
 static void ejecucionNormal() {
 	while (!programTerminated()) {
+		create_handler();
+		if (sigsetjmp(env, 1) == 1) {
+			restaurarSTDIO(); //bueno, esta linea se necesita aca si o si, igual para el batch file
+			continue;
+		}
 		printPrompt();
 		char *line = NULL;
 		size_t len = 0;
@@ -67,6 +97,11 @@ static void ejecucionBatchFile(char *path) {
 	size_t len = 0;
 	ssize_t read;
 	while ((read = getline(&comando, &len, archivo)) != -1) {
+		create_handler();
+		if (sigsetjmp(env, 1) == 1) {
+			restaurarSTDIO();
+			continue;
+		}
 		parsearComando(comando);
 	}
 	fclose(archivo);

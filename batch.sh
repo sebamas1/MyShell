@@ -9,3 +9,4 @@ wc -l < input.txt > output.txt < input.txt
 echo hola a todos
 ps -l
 ps -l > pruebita.txt
+echo hola

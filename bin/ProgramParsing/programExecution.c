@@ -16,6 +16,7 @@
 #include "../InCommands/internalCommands.h"
 
 static bool quit = false;
+static int job_id = 1;
 
 static int spawn(char *program, char **arg_list) {
 	pid_t child_pid;
@@ -34,7 +35,7 @@ static int spawn(char *program, char **arg_list) {
 	}
 }
 
-static int programInvocation(struct Nodo *lista) {
+static int programInvocation(struct Nodo *lista, bool background) {
 	int list_size = getSize(lista);
 	char *arg_list[list_size + 1];
 	lista = find(lista, 0); //vuelvo al principio de la lista(si es que no estoy)
@@ -52,24 +53,31 @@ static int programInvocation(struct Nodo *lista) {
 
 	int child_status;
 
-	spawn(arg_list[0], arg_list);
+	pid_t child_pid = spawn(arg_list[0], arg_list);
 
-	wait(&child_status);
+	if (background) {
+		printf("[%i] %d\n", job_id ,child_pid);
+		job_id ++;
+	} else {
+		wait(&child_status);
+	}
 
 	return 0;
 }
-void programExecution(struct Nodo *lista){
+void programExecution(struct Nodo *lista, bool background) {
 	if (strcmp(lista->palabra, "cd") == 0) {
-			changeDir(lista);
-		} else if (strcmp(lista->palabra, "echo") == 0) {
-			echo(lista);
-		} else if (strcmp(lista->palabra, "quit") == 0) {
-			quit = true;
-		} else if (strcmp(lista->palabra, "clr") == 0) {
-			system("clear");      //ACORDATE QUE TENES QUE CAMBIAR ESTO
-		} else
-			programInvocation(lista);
+		changeDir(lista);
+	} else if (strcmp(lista->palabra, "echo") == 0) {
+		echo(lista);
+	} else if (strcmp(lista->palabra, "quit") == 0) {
+		quit = true;
+	} else if (strcmp(lista->palabra, "clr") == 0) {
+		system("clear");      //ACORDATE QUE TENES QUE CAMBIAR ESTO
+	} else
+		programInvocation(lista, background);
+
+
 }
-bool terminateShell(){
+bool terminateShell() {
 	return quit;
 }
