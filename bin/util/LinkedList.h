@@ -20,5 +20,6 @@ int borrarLista(struct Nodo *nodo);
 struct Nodo* find(struct Nodo* nodo, int index);
 int getSize(struct Nodo *nodo);
 struct Nodo* borrarNodo(struct Nodo *nodo);
+struct Nodo* cortarLista(struct Nodo *nodo);
 
 #endif /* BIN_UTIL_LINKEDLIST_H_ */

@@ -12,6 +12,7 @@
 #include "../util/LinkedList.h"
 #include "programExecution.h"
 #include "parseIO.h"
+#include "parsePipes.h"
 
 static bool background = false;
 
@@ -42,25 +43,35 @@ int parsearComando(char *line) {
 
 	struct Nodo *lista = crearLinkedList(line);
 
-	struct Nodo *tmp = generarComandoIOParseado(lista);
-	if (tmp == NULL) {
-		return -1;
-	} else {
-		lista = tmp;
+//	struct Nodo *tmp = generarComandoIOParseado(lista);
+//	if (tmp == NULL) {
+//		return -1;
+//	} else {
+//		lista = tmp;
+//	}
+//
+//	tmp = parseBackground(lista);
+//	if (tmp == NULL) {
+//		return -1;
+//	} else {
+//		lista = tmp;
+//	}
+//
+//	programExecution(lista, background);
+//
+//	background = false;
+//
+//	restaurarSTDIO();
+
+	int max_pipes = get_max_pipes();
+	struct Nodo** comandos;
+	comandos = parse_pipes(lista);
+	for(int i = 0; i < max_pipes; i++){
+		if(comandos[i] == NULL) break;
+		printf("%s\n", comandos[i]->palabra);
 	}
 
-	tmp = parseBackground(lista);
-	if (tmp == NULL) {
-		return -1;
-	} else {
-		lista = tmp;
-	}
-
-	programExecution(lista, background);
-
-	background = false;
-
-	restaurarSTDIO();
+	limpiar_comand_list();
 
 	borrarLista(lista);
 

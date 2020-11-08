@@ -1,6 +1,6 @@
-CFLAGS = -g -Wall -pedantic -Werror -Wextra -Wconversion -std=gnu11
+CFLAGS = -g #-Wall -pedantic -Werror -Wextra -Wconversion -std=gnu11
 
-myshell: obj/myshell.o obj/internalCommands.o obj/LinkedList.o obj/programExecution.o obj/parseIO.o obj/programParsing.o obj/signalHandling.o
+myshell: obj/myshell.o obj/internalCommands.o obj/LinkedList.o obj/programExecution.o obj/parseIO.o obj/programParsing.o obj/signalHandling.o obj/parsePipes.o
 	gcc $(CFLAGS) -o myshell $^
 	
 obj/myshell.o: bin/myshell.c 
@@ -25,6 +25,9 @@ obj/programParsing.o : bin/ProgramParsing/programParsing.h bin/ProgramParsing/pr
 
 obj/signalHandling.o : bin/SignalHandling/signalHandling.h bin/SignalHandling/signalHandling.c
 	gcc $(CFLAGS) -c bin/SignalHandling/signalHandling.c -o obj/signalHandling.o
+	
+obj/parsePipes.o : bin/ProgramParsing/parsePipes.h bin/ProgramParsing/parsePipes.c
+	gcc $(CFLAGS) -c bin/ProgramParsing/parsePipes.c -o obj/parsePipes.o
 
 clean:
 	rm -f obj/*.o
