@@ -92,11 +92,11 @@ static int programInvocation(struct Nodo *lista, bool background) {
 	pid_t child_pid = spawn(arg_list[0], arg_list, background);
 
 	if (background) {
-		waitpid(child_pid, NULL, WNOHANG);
 		printf("[%i] %d\n", get_job_id(child_pid), child_pid);
 	} else {
 		current_child_pid = child_pid;
 		wait(&child_status);
+		current_child_pid = -1;
 	}
 
 	return 0;
@@ -121,15 +121,11 @@ void stop_child(){
 		kill(current_child_pid, SIGTSTP);
 		printf("\n%i suspended by signal %i\n", current_child_pid, SIGTSTP);
 		current_child_pid = -1;
-	} else {
-		puts("");
 	}
 }
 void sigint_child(){
 	if(current_child_pid != -1){
 		kill(current_child_pid, SIGINT);
 		current_child_pid = -1;
-	} else {
-		puts("");
 	}
 }

@@ -51,6 +51,8 @@ static int printPrompt() {
 }
 static void ejecucionNormal() {
 	while (!programTerminated()) {
+		create_SIGTSTP_handler();
+		create_SIGINT_handler();
 		create_suspension_and_zombie_handler();
 		if (sigsetjmp(env, 1) == 1) {
 			restaurarSTDIO(); //bueno, esta linea se necesita aca si o si, igual para el batch file
@@ -87,8 +89,6 @@ static void ejecucionBatchFile(char *path) {
 	fclose(archivo);
 }
 int main(int argc, char *argv[]) {
-	create_SIGTSTP_handler();
-	create_SIGINT_handler();
 	if (argc > 2) {
 		fprintf(stderr, "Cantidad de argumentos incorrecta.\n");
 		exit(EXIT_FAILURE);

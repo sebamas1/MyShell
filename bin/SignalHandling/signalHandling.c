@@ -43,7 +43,7 @@ static void check_signals() {
 			fprintf(stdout, "\n[%i] %i resumed\n", i, job_id[i]);
 			break;
 		}
-		if(WIFEXITED(wstatus) && kid_pid != -1){
+		if(WIFEXITED(wstatus) && kid_pid > 0){
 			fprintf(stdout, "\nProgram %i terminated\n", kid_pid);
 		}
 	}
@@ -65,6 +65,7 @@ void create_SIGTSTP_handler() {
 }
 void enviar_SIGSTP(){
 	stop_child();
+	puts("");
 	siglongjmp(env, 1);
 }
 
@@ -80,5 +81,6 @@ void create_SIGINT_handler() {
 
 void enviar_SIGINT(){
 	sigint_child();
+	puts("");
 	siglongjmp(env, 1);
 }
