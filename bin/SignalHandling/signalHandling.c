@@ -65,7 +65,6 @@ void create_SIGTSTP_handler() {
 }
 void enviar_SIGSTP(){
 	stop_child();
-	puts("");
 	siglongjmp(env, 1);
 }
 
@@ -81,6 +80,5 @@ void create_SIGINT_handler() {
 
 void enviar_SIGINT(){
 	sigint_child();
-	puts("");
 	siglongjmp(env, 1);
 }

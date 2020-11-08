@@ -19,7 +19,7 @@ static bool background = false;
 static struct Nodo* parseBackground(struct Nodo *lista) {
 	struct Nodo *tmp = find(lista, 0);
 	for (int i = 0; i < getSize(lista); i++) {
-		if (strncmp(tmp->palabra, "&", 1) == 0) { //acordate de probar con strlen
+		if (strncmp(tmp->palabra, "&", 1) == 0) {
 			if (strlen(tmp->palabra) == 1) {
 				background = true;
 				return find(borrarNodo(tmp), 0); //borra el & y devuelve la cabeza de la lista
@@ -43,35 +43,35 @@ int parsearComando(char *line) {
 
 	struct Nodo *lista = crearLinkedList(line);
 
-//	struct Nodo *tmp = generarComandoIOParseado(lista);
-//	if (tmp == NULL) {
-//		return -1;
-//	} else {
-//		lista = tmp;
-//	}
-//
-//	tmp = parseBackground(lista);
-//	if (tmp == NULL) {
-//		return -1;
-//	} else {
-//		lista = tmp;
-//	}
-//
-//	programExecution(lista, background);
-//
-//	background = false;
-//
-//	restaurarSTDIO();
-
-	int max_pipes = get_max_pipes();
-	struct Nodo** comandos;
-	comandos = parse_pipes(lista);
-	for(int i = 0; i < max_pipes; i++){
-		if(comandos[i] == NULL) break;
-		printf("%s\n", comandos[i]->palabra);
+	struct Nodo *tmp = generarComandoIOParseado(lista);
+	if (tmp == NULL) {
+		return -1;
+	} else {
+		lista = tmp;
 	}
 
-	limpiar_comand_list();
+	tmp = parseBackground(lista);
+	if (tmp == NULL) {
+		return -1;
+	} else {
+		lista = tmp;
+	}
+
+	programExecution(lista, background);
+
+	background = false;
+
+	restaurarSTDIO();
+
+//	int max_pipes = get_max_pipes();
+//	struct Nodo** comandos;
+//	comandos = parse_pipes(lista);
+//	for(int i = 0; i < max_pipes; i++){
+//		if(comandos[i] == NULL) break;
+//		printf("%s\n", comandos[i]->palabra);
+//	}
+
+//	limpiar_comand_list();
 
 	borrarLista(lista);
 
