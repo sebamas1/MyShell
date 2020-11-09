@@ -15,23 +15,39 @@
 #include "../util/LinkedList.h"
 #include "../InCommands/internalCommands.h"
 #include "../SignalHandling/jobs.h"
+#include "parseIO.h"
 
 static bool quit = false;
-static struct Nodo *saved_list;
 static pid_t current_child_pid = -1;
 
-static int ejecutar_comando_interno() {
-	if (strcmp(saved_list->palabra, "cd") == 0) {
-		changeDir(saved_list);
+static void generar_comand_arguments(struct Nodo *lista, char **arg_list) {
+	int list_size = getSize(lista);
+	lista = find(lista, 0); //vuelvo al principio de la lista(si es que no estoy)
+	for (int i = 0; i < list_size; i++) {
+		if (lista != NULL) {
+			arg_list[i] = lista->palabra;
+		}
+
+		if (i < list_size - 1) { //podria perder la ref. y despues no puedo limpiar la lista
+			lista = lista->siguienteNodo;
+		}
+	}
+
+	arg_list[list_size] = NULL;
+}
+
+static int ejecutar_comando_interno(struct Nodo *lista) {
+	if (strcmp(lista->palabra, "cd") == 0) {
+		changeDir(lista);
 		return 0;
-	} else if (strcmp(saved_list->palabra, "echo") == 0) {
-		echo(saved_list);
+	} else if (strcmp(lista->palabra, "echo") == 0) {
+		echo(lista);
 		return 0;
-	} else if (strcmp(saved_list->palabra, "quit") == 0) {
+	} else if (strcmp(lista->palabra, "quit") == 0) {
 		quit = true;
 		return 0;
-	} else if (strcmp(saved_list->palabra, "clr") == 0) {
-		system("clear");      //ACORDATE QUE TENES QUE CAMBIAR ESTO
+	} else if (strcmp(lista->palabra, "clr") == 0) {
+		printf ("\033c");
 		return 0;
 	}
 	return -1;
@@ -48,83 +64,97 @@ static int get_job_id(pid_t child_pid) {
 
 	return -1;
 }
-
-static int spawn(char *program, char **arg_list, bool background) {
-	pid_t child_pid;
-
-	/* Duplicate this process. */
-	child_pid = fork();
-
-	if (child_pid != 0) {
-		return child_pid;
-	} else {
-		if (background) {
-			if (ejecutar_comando_interno() == 0) {
-				exit(EXIT_SUCCESS);
-			}
-		}
-		execvp(program, arg_list);
-
-		/* returns only if an error occurs. */
-		perror("Child process");
-		abort();
+static void close_pipes(int fd[][2], int cant_comandos) {
+	for (int i = 0; i < cant_comandos - 1; i++) {
+		close(fd[i][0]);
+		close(fd[i][1]);
 	}
 }
 
-static int programInvocation(struct Nodo *lista, bool background) {
-	int list_size = getSize(lista);
-	char *arg_list[list_size + 1];
-	lista = find(lista, 0); //vuelvo al principio de la lista(si es que no estoy)
-	for (int i = 0; i < list_size; i++) {
-		if (lista != NULL) {
-			arg_list[i] = lista->palabra;
-		}
+static int programInvocation(bool background, struct Nodo **comandos) {
 
-		if (i < list_size - 1) { //podria perder la ref. y despues no puedo limpiar la lista
-			lista = lista->siguienteNodo;
+	int cant_comandos = 0; // cuenta cant de comandos
+	for (int i = 0; i < 1001; i++) {
+		if (comandos[i] != NULL) {
+			cant_comandos++;
 		}
 	}
-
-	arg_list[list_size] = NULL;
-
-	int child_status;
-
-	pid_t child_pid = spawn(arg_list[0], arg_list, background);
-
-	if (background) {
-		printf("[%i] %d\n", get_job_id(child_pid), child_pid);
-	} else {
-		current_child_pid = child_pid;
-		wait(&child_status);
-		current_child_pid = -1;
+	int fd[cant_comandos - 1][2];
+	if (cant_comandos > 1) { //crea los pipes siempre que haya mas de un comando
+		for (int i = 0; i < cant_comandos - 1; i++) {
+			if (pipe(fd[i]) < 0) {
+				fprintf(stderr, "Problemas con los pipes fd.\n");
+				return -1;
+			}
+		}
 	}
+	pid_t child_pid[cant_comandos - 1];
 
+	for (int i = 0; i < cant_comandos; i++) { //ejecuta los comandos uno a uno
+
+		int list_size = getSize(comandos[i]);
+		char *arg_list[list_size + 1];
+		generar_comand_arguments(comandos[i], arg_list);
+
+		current_child_pid = fork();
+
+		child_pid[i] = current_child_pid;
+
+		if (child_pid[i] == 0) { //child process
+			if (cant_comandos > 1) {
+				if (i < cant_comandos - 1)
+					dup2(fd[i][1], STDOUT_FILENO);
+				if (i - 1 >= 0)
+					dup2(fd[i - 1][0], STDIN_FILENO);
+				close_pipes(fd, cant_comandos);
+			}
+
+			if (background) {
+				if (ejecutar_comando_interno(comandos[i]) == 0) {
+					exit(EXIT_SUCCESS);
+				}
+			}
+			execvp(arg_list[0], arg_list);
+
+			perror("Child process");
+			abort();
+
+		} //end child process
+	}
+	if (cant_comandos > 1)
+		close_pipes(fd, cant_comandos);
+
+	for (int i = 0; i < cant_comandos; i++) {
+		if (background) {
+			printf("[%i] %d\n", get_job_id(child_pid[i]), child_pid[i]);
+		} else {
+			waitpid(child_pid[i], NULL, 0);
+		}
+	}
 	return 0;
 }
 
-void programExecution(struct Nodo *lista, bool background) {
-	saved_list = lista;
+void programExecution(bool background, struct Nodo **comandos) {
 	if (background) {
-		programInvocation(lista, background);
+		programInvocation(background, comandos);
 	} else {
-		if (ejecutar_comando_interno() == 0)
+		if (ejecutar_comando_interno(comandos[0]) == 0)
 			return;
-		programInvocation(lista, background);
+		programInvocation(background, comandos);
 	}
-
 }
 bool terminateShell() {
 	return quit;
 }
-void stop_child(){
-	if(current_child_pid != -1){
+void stop_child() {
+	if (current_child_pid != -1) {
 		kill(current_child_pid, SIGTSTP);
 		printf("\n%i suspended by signal %i\n", current_child_pid, SIGTSTP);
 		current_child_pid = -1;
 	}
 }
-void sigint_child(){
-	if(current_child_pid != -1){
+void sigint_child() {
+	if (current_child_pid != -1) {
 		kill(current_child_pid, SIGINT);
 		current_child_pid = -1;
 	}

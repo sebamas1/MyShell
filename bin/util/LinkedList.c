@@ -79,7 +79,6 @@ int borrarLista(struct Nodo *nodo) {
 		next = nodo->siguienteNodo;
 	}
 	free(nodo);
-	head = NULL;
 	current = NULL;
 	return 0;
 }

@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include "../util/LinkedList.h"
 
-int programExecution(struct Nodo *lista, bool background);
+int programExecution(bool background, struct Nodo** comandos);
 bool terminateShell();
 void stop_child();
 void sigint_child();

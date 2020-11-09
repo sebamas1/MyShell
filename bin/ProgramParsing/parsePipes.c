@@ -54,6 +54,8 @@ void limpiar_comand_list() {
 		if (comandos[i] == NULL){
 			break;
 		}
+		borrarLista(comandos[i]);
+		if(comandos[i + 1] != NULL) borrarLista(comandos[i + 1]);
 		comandos[i] = NULL;
 		comandos[i + 1] = NULL;
 		i++;
@@ -73,7 +75,4 @@ struct Nodo** parse_pipes(struct Nodo *lista) {
 	}
 
 	return comandos;
-}
-int get_max_pipes(){
-	return MAX_PIPES;
 }

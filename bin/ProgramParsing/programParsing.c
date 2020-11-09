@@ -9,10 +9,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <setjmp.h>
+#include <sys/wait.h>
 #include "../util/LinkedList.h"
 #include "programExecution.h"
 #include "parseIO.h"
 #include "parsePipes.h"
+#include "../SignalHandling/signalHandling.h"
 
 static bool background = false;
 
@@ -30,18 +32,23 @@ static struct Nodo* parseBackground(struct Nodo *lista) {
 				return NULL;
 			}
 		}
-		if(tmp->siguienteNodo != NULL){
+		if (tmp->siguienteNodo != NULL) {
 			tmp = tmp->siguienteNodo;
 		}
 	}
 	return lista;
+}
+void limpiarPrograma() {
+	background = false;
+	restaurarSTDIO();
+	limpiar_comand_list();
 }
 
 int parsearComando(char *line) {
 	if (strcmp(line, "\n") == 0)
 		return 0;
 
-	struct Nodo *lista = crearLinkedList(line);
+	struct Nodo *lista = crearLinkedList(line); //cuando haya IO redirection, y pipes, cancelar ejecucion
 
 	struct Nodo *tmp = generarComandoIOParseado(lista);
 	if (tmp == NULL) {
@@ -57,23 +64,13 @@ int parsearComando(char *line) {
 		lista = tmp;
 	}
 
-	programExecution(lista, background);
+	struct Nodo **comandos;
+	if ((comandos = parse_pipes(lista)) == NULL) {
+		return -1;
+	}
 
-	background = false;
-
-	restaurarSTDIO();
-
-//	int max_pipes = get_max_pipes();
-//	struct Nodo** comandos;
-//	comandos = parse_pipes(lista);
-//	for(int i = 0; i < max_pipes; i++){
-//		if(comandos[i] == NULL) break;
-//		printf("%s\n", comandos[i]->palabra);
-//	}
-
-//	limpiar_comand_list();
-
-	borrarLista(lista);
+	programExecution(background, comandos);
+	limpiarPrograma();
 
 	return 0;
 }

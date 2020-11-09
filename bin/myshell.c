@@ -55,7 +55,7 @@ static void ejecucionNormal() {
 		create_SIGINT_handler();
 		create_suspension_and_zombie_handler();
 		if (sigsetjmp(env, 1) == 1) {
-			restaurarSTDIO(); //bueno, esta linea se necesita aca si o si, igual para el batch file
+			limpiarPrograma();
 			puts("");
 			continue;
 		}
@@ -82,7 +82,7 @@ static void ejecucionBatchFile(char *path) {
 	while ((read = getline(&comando, &len, archivo)) != -1) {
 		create_suspension_and_zombie_handler();
 		if (sigsetjmp(env, 1) == 1) {
-			restaurarSTDIO();
+			limpiarPrograma();
 			puts("");
 			continue;
 		}

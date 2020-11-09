@@ -8,7 +8,8 @@
 #ifndef BIN_PROGRAMPARSING_PROGRAMPARSING_H_
 #define BIN_PROGRAMPARSING_PROGRAMPARSING_H_
 
-void parsearComando(char *line);
+int parsearComando(char *line);
 bool programTerminated();
+void limpiarPrograma();
 
 #endif /* BIN_PROGRAMPARSING_PROGRAMPARSING_H_ */
