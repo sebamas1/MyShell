@@ -20,7 +20,7 @@ void create_suspension_and_zombie_handler() {
 
 	sigfillset(&sa.sa_mask);
 	sa.sa_handler = check_signal_and_delete_zombies;
-	sa.sa_flags = 0;
+	sa.sa_flags = 0; //SA_NOCLDSTOP
 	sigaction(SIGCHLD, &sa, NULL);
 }
 
@@ -45,6 +45,7 @@ static void check_signals() {
 		}
 		if(WIFEXITED(wstatus) && kid_pid > 0){
 			fprintf(stdout, "\nProgram %i terminated\n", kid_pid);
+			job_id[i] = 0;
 		}
 	}
 }

@@ -12,9 +12,11 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <stdbool.h>
+#include <setjmp.h>
 #include "../util/LinkedList.h"
 #include "../InCommands/internalCommands.h"
 #include "../SignalHandling/jobs.h"
+#include "../SignalHandling/signalHandling.h"
 #include "parseIO.h"
 
 static bool quit = false;
@@ -88,7 +90,7 @@ static int programInvocation(bool background, struct Nodo **comandos) {
 			}
 		}
 	}
-	pid_t child_pid[cant_comandos - 1];
+	pid_t child_pids_array[cant_comandos];
 
 	for (int i = 0; i < cant_comandos; i++) { //ejecuta los comandos uno a uno
 
@@ -96,11 +98,11 @@ static int programInvocation(bool background, struct Nodo **comandos) {
 		char *arg_list[list_size + 1];
 		generar_comand_arguments(comandos[i], arg_list);
 
-		current_child_pid = fork();
+		int child_pid = fork();
 
-		child_pid[i] = current_child_pid;
+		child_pids_array[i] = child_pid;
 
-		if (child_pid[i] == 0) { //child process
+		if (child_pids_array[i] == 0) { //child process
 			if (cant_comandos > 1) {
 				if (i < cant_comandos - 1)
 					dup2(fd[i][1], STDOUT_FILENO);
@@ -126,9 +128,11 @@ static int programInvocation(bool background, struct Nodo **comandos) {
 
 	for (int i = 0; i < cant_comandos; i++) {
 		if (background) {
-			printf("[%i] %d\n", get_job_id(child_pid[i]), child_pid[i]);
+			printf("[%i] %d\n", get_job_id(child_pids_array[i]), child_pids_array[i]);
 		} else {
-			waitpid(child_pid[i], NULL, 0);
+			current_child_pid = child_pids_array[i]; // no me ntra en la cabeza como en backgroud, tiene el pid
+			sigsetjmp(env, 1);
+			waitpid(child_pids_array[i], NULL, 0);
 		}
 	}
 	return 0;
@@ -147,14 +151,14 @@ bool terminateShell() {
 	return quit;
 }
 void stop_child() {
-	if (current_child_pid != -1) {
+	if (current_child_pid > 0) {
 		kill(current_child_pid, SIGTSTP);
 		printf("\n%i suspended by signal %i\n", current_child_pid, SIGTSTP);
 		current_child_pid = -1;
 	}
 }
 void sigint_child() {
-	if (current_child_pid != -1) {
+	if (current_child_pid > 0) {
 		kill(current_child_pid, SIGINT);
 		current_child_pid = -1;
 	}

@@ -14,7 +14,6 @@
 #include "programExecution.h"
 #include "parseIO.h"
 #include "parsePipes.h"
-#include "../SignalHandling/signalHandling.h"
 
 static bool background = false;
 

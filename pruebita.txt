@@ -1,0 +1,10 @@
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    4930    4922  0  80   0 -  4884 sigsus pts/0    00:00:00 zsh
+0 S  1000    4992    4930  0  80   0 -   647 do_wai pts/0    00:00:00 myshell
+0 S  1000    5209    4992  0  80   0 -   627 do_wai pts/0    00:00:00 myshell
+4 Z  1000    5212    5209  0  80   0 -     0 -      pts/0    00:00:00 ps <defunct>
+4 R  1000    5215    5209  0  80   0 -  3523 -      pts/0    00:00:00 ps
+4 R  1000    5216    5209  0  80   0 -  3523 -      pts/0    00:00:00 ps
+0 grep
+0 R  1000    1710    1704  0  80   0 -  3523 -      pts/0    00:00:00 ps
+0 R  1000    1711    1704  0  80   0 -  3523 -      pts/0    00:00:00 ps
