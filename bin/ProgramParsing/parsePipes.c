@@ -14,6 +14,9 @@
 
 struct Nodo* comandos[MAX_PIPES + 1] =  { NULL } ;
 
+/*
+Se le pasa la lista doblemente enlazada para que guarde los comandos correspondientes a cada pipe.
+*/
 static void guardar_comando(struct Nodo *lista) {
 	for (int i = 0; i < MAX_PIPES + 1; i++) {
 		if (comandos[i] == NULL) {
@@ -31,6 +34,8 @@ static void guardar_comando(struct Nodo *lista) {
 static int findPipes(struct Nodo *lista) {
 	struct Nodo *tmp = find(lista, 0);
 	int list_size = getSize(lista);
+
+	//aca busca el primer |, corta la lista ahi, borra el | y guarda el comando que es hasta el |.
 	for (int i = 0; i < list_size; i++) {
 		if (strncmp(tmp->palabra, "|", 1) == 0) {
 			if (strlen(tmp->palabra)
@@ -46,9 +51,11 @@ static int findPipes(struct Nodo *lista) {
 			tmp = tmp->siguienteNodo;
 		}
 	}
+	//aca guarda el ultimo comando que queda.
 	guardar_comando(tmp);
 	return 0;
 }
+
 void limpiar_comand_list() {
 	for (int i = 0; i < MAX_PIPES + 1; i++) {
 		if (comandos[i] == NULL){
@@ -61,6 +68,7 @@ void limpiar_comand_list() {
 		i++;
 	}
 }
+// devuelve un array de listas doblemente enlazadas, cada una con un comando.
 struct Nodo** parse_pipes(struct Nodo *lista) {
 	if (findPipes(lista) == -1) {
 		limpiar_comand_list();

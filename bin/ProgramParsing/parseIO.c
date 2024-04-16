@@ -21,7 +21,7 @@ static int saved_stdout;
 static int redirectInput(struct Nodo *input) {
 
 	int input_file = open(input->palabra, O_RDONLY, 0777);
-	if (input_file == -1) {
+	if (input_file == -1) { // si no se pudo abrir el archivo, se intenta abrir el archivo en el directorio actual
 		char cwd[PATH_MAX + 3];
 		strcpy(cwd, "./");
 		strcat(cwd, input->palabra);
@@ -96,8 +96,8 @@ void restaurarSTDIO() {
 	dup2(saved_stdout, 1);
 }
 struct Nodo* generarComandoIOParseado(struct Nodo *lista) {
-	saved_stdin = dup(0);
-	saved_stdout = dup(1);
+	saved_stdin = dup(0); // guardo el descriptor 0 que es el stdin
+	saved_stdout = dup(1); // y el descriptor 1 que es el stdout
 
 	struct Nodo *tmp = find(lista, 0);
 	int list_size = getSize(lista);

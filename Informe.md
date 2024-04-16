@@ -1,6 +1,6 @@
-#myshell
+# myshell
 
-##Metodos de uso
+## Metodos de uso
  Para compilar el programa, es suficiente escribir 
      
      make
@@ -26,7 +26,7 @@ Para ejecutar el programa, es suficiente escribir
   
    - _myshell_  acepta **pipes** mediante el operador **|** que permiten que los comandos que ingresa el usuario se comuniquen.
    
-##Problemas encontrados
+## Problemas encontrados
 
  - Problemas con el echo y program invocation, en el que si escribia bien por ejemplo, la redireccion del input
 pero habia un error en la escritura del output, me olvidaba de restaurar el input y el programa hacia cosas
@@ -39,7 +39,7 @@ un program invocation.
  
   - Problemas con sigsetjmp que hasta ahora no entiendo por que se debia, pero se solucionaba cambiandolo de lugar.
   
-##Bugs conocidos
+## Bugs conocidos
  
 - La redireccion de output provoca que el job id y el process id se impriman en el output seleccionado.
 
@@ -61,7 +61,11 @@ un program invocation.
  
   - Antes de entregar me di cuenta que cuando uso pipes, los procesos no se limpian correctamente y quedan zombies.
 
-##Ejempos de uso
+  - Si se meten multiples espacios o tabs sin escribir ninguna palabra el programa se rompe.
+
+  - 
+
+## Ejempos de uso
 
 Input:
 
